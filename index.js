@@ -1,10 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
-import connectDB from "./database/database.js";
+
 import contactRoute from "./routes/contact.js";
 import bodyParser from "body-parser";
 import cors from "cors";
-
+import mongoose from "mongoose";
 
 const app = express();
 dotenv.config();
@@ -14,7 +14,16 @@ app.use(cors());
 
 app.use("/", contactRoute);
 
-app.listen(process.env.PORT, () => {
-  connectDB();
-  console.log("listening on port " + process.env.PORT);
-});
+(async () => {
+  try {
+    await mongoose.connect(process.env.DATABASE, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    app.listen(process.env.PORT, () => {
+      console.log("listening on port " + process.env.PORT);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+})();
